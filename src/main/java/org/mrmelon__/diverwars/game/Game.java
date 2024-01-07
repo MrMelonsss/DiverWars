@@ -72,6 +72,14 @@ public class Game {
     public void saveConfig() {
         try {
             gameConfig.save(file);
+            System.out.println("-------------------------STARTsave---------------------------"); //РАЗБЕРИСЬ С ЭТОЙ ЖОПОЙ
+            System.out.println(gameConfig.get("teams.blop.playersCount"));
+            System.out.println(gameConfig.get("teams.blop.color"));
+            System.out.println(gameConfig.getIntegerList("teams.blop.teamSpawn"));
+            System.out.println(gameConfig.getIntegerList("teams.blop.teamGenerator"));
+            System.out.println(gameConfig.getIntegerList("pos1ForBorderOfReplace"));
+            System.out.println(gameConfig.getIntegerList("pos2ForBorderOfReplace"));
+            System.out.println("-------------------------------------------------------------");
         } catch (Exception e) {
             System.out.println("Config of "+file.getName()+" game doesn't save. ERROR: "+e);
         }
