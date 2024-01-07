@@ -36,7 +36,7 @@ public class BlockActionEvent implements Listener {
 
         if (checkRegion(game,location)) {
             if (!game.getBlocksForReplace().containsKey(location)) {
-                game.getBlocksForReplace().put(location, Material.AIR);
+                game.getBlocksForReplace().put(location, Material.AIR); // пофиксить тему с водой
             }
         }
     }

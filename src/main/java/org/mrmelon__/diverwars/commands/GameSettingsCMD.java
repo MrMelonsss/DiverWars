@@ -158,6 +158,24 @@ public class GameSettingsCMD implements CommandExecutor {
 
                                             } else commandSender.sendMessage("Please, use /diverwars team set teamGenerator [game]");
                                             break;
+                                        case "teamEngine":
+                                            if (strings.length >= 3) {
+                                                if (strings.length == 5) {
+                                                    if (Main.getInstance().getGameManager().nameExist(strings[3])) {
+                                                        if (Main.getInstance().getGameManager().getGameByName(strings[3]).getTeamByName(strings[4])==null) {
+                                                            commandSender.sendMessage("this team is not defined");
+                                                            return false;
+                                                        }
+                                                        Main.getInstance().getGameManager().getGameByName(strings[3]).getTeamByName(strings[4]).setTeamEngine(player.getLocation().getBlockX(),player.getLocation().getBlockY(),player.getLocation().getBlockZ());
+                                                        Main.getInstance().getGameManager().getGameByName(strings[3]).reloadValueInConfig();
+                                                        commandSender.sendMessage("teamEngine location of " + strings[3] + " game was changed on "+Arrays.toString(Main.getInstance().getGameManager().getGameByName(strings[3]).getTeamByName(strings[4]).getTeamEngine()));
+                                                        return true;
+                                                    }
+                                                    commandSender.sendMessage("This game is not defined");
+                                                } else commandSender.sendMessage("Please, use /diverwars team set teamEngine [game] [team name]");
+
+                                            } else commandSender.sendMessage("Please, use /diverwars team set teamEngine [game]");
+                                            break;
                                     }
                                 }
                         }

@@ -72,17 +72,14 @@ public class Game {
     public void saveConfig() {
         try {
             gameConfig.save(file);
-            System.out.println("-------------------------STARTsave---------------------------"); //РАЗБЕРИСЬ С ЭТОЙ ЖОПОЙ
-            System.out.println(gameConfig.get("teams.blop.playersCount"));
-            System.out.println(gameConfig.get("teams.blop.color"));
-            System.out.println(gameConfig.getIntegerList("teams.blop.teamSpawn"));
-            System.out.println(gameConfig.getIntegerList("teams.blop.teamGenerator"));
-            System.out.println(gameConfig.getIntegerList("pos1ForBorderOfReplace"));
-            System.out.println(gameConfig.getIntegerList("pos2ForBorderOfReplace"));
-            System.out.println("-------------------------------------------------------------");
+            reloadConfig();
         } catch (Exception e) {
             System.out.println("Config of "+file.getName()+" game doesn't save. ERROR: "+e);
         }
+    }
+
+    public void reloadConfig() {
+        gameConfig = YamlConfiguration.loadConfiguration(file);
     }
 
     public void setAllInConfig() {
@@ -93,41 +90,27 @@ public class Game {
         gameConfig.set("mapName",mapName);
         gameConfig.set("countOfPlayers",countOfPlayers);
         for (Team team : teams) {
-            System.out.println("-------------------------STARTs------------------------------"); //РАЗБЕРИСЬ С ЭТОЙ ЖОПОЙ
-            System.out.println(gameConfig.get("teams."+team.getName()+".playersCount"));
-            System.out.println(gameConfig.get("teams."+team.getName()+".color"));
-            System.out.println(gameConfig.getIntegerList("teams."+team.getName()+".teamSpawn"));
-            System.out.println(Arrays.toString(team.getTeamSpawn()));
-            System.out.println(gameConfig.getIntegerList("teams."+team.getName()+".teamGenerator"));
-            System.out.println(Arrays.toString(team.getTeamGenerator()));
-            System.out.println("-------------------------------------------------------------");
             gameConfig.set("teams."+team.getName()+".playersCount",team.getPlayers());
             gameConfig.set("teams."+team.getName()+".color",team.getColor());
             gameConfig.set("teams."+team.getName()+".teamSpawn",team.getTeamSpawn());
             gameConfig.set("teams."+team.getName()+".teamGenerator",team.getTeamGenerator());
-            System.out.println(gameConfig.get("teams."+team.getName()+".playersCount"));
-            System.out.println(gameConfig.get("teams."+team.getName()+".color"));
-            System.out.println(gameConfig.getIntegerList("teams."+team.getName()+".teamSpawn"));
-            System.out.println(Arrays.toString(team.getTeamSpawn()));
-            System.out.println(gameConfig.getIntegerList("teams."+team.getName()+".teamGenerator"));
-            System.out.println(Arrays.toString(team.getTeamGenerator()));
-            System.out.println("--------------------------ENDs-------------------------------");
+            gameConfig.set("teams."+team.getName()+".teamEngine",team.getTeamEngine());
         }
         gameConfig.set("world",world);
-        System.out.println(gameConfig.getIntegerList("pos1ForBorderOfReplace"));
-        System.out.println(gameConfig.getIntegerList("pos2ForBorderOfReplace"));
         gameConfig.set("pos1ForBorderOfReplace",pos1ForBorderOfReplace);
         gameConfig.set("pos2ForBorderOfReplace",pos2ForBorderOfReplace);
-        System.out.println(gameConfig.getIntegerList("pos1ForBorderOfReplace"));
-        System.out.println(gameConfig.getIntegerList("pos2ForBorderOfReplace"));
         gameConfig.set("lobby",lobby);
     }
 
     public void getAllFromConfig() { // надо реализовать проверку на существование приколов
+        reloadConfig();
         name=gameConfig.getString("name");
         mapName=gameConfig.getString("mapName");
         countOfPlayers=gameConfig.getInt("countOfPlayers");
         if (gameConfig.contains("teams")) {
+            if (!teams.isEmpty()) {
+                teams.clear();
+            }
             for (String teamName : gameConfig.getConfigurationSection("teams").getKeys(false)) {
                 String[] teamsConfig = gameConfig.getConfigurationSection("teams." + teamName).getKeys(false).toArray(new String[0]);
                 Team team = new Team(teamName, gameConfig.getInt("teams."+teamName+"."+teamsConfig[0]), gameConfig.getString("teams."+teamName+"."+teamsConfig[1]),this);
@@ -137,12 +120,9 @@ public class Game {
                 posList = gameConfig.getIntegerList("teams."+teamName+".teamGenerator");
                 if (!posList.isEmpty())
                     team.setTeamGenerator(posList.get(0),posList.get(1),posList.get(2));
-                System.out.println("-------------------------STARTg-----------------------------");
-                System.out.println(gameConfig.getInt("teams."+teamName+"."+teamsConfig[0]));
-                System.out.println(gameConfig.getString("teams."+teamName+"."+teamsConfig[1]));
-                System.out.println(gameConfig.getIntegerList("teams."+teamName+".teamSpawn"));
-                System.out.println(gameConfig.getIntegerList("teams."+teamName+".teamGenerator"));
-
+                posList = gameConfig.getIntegerList("teams."+teamName+".teamEngine");
+                if (!posList.isEmpty())
+                    team.setTeamEngine(posList.get(0),posList.get(1),posList.get(2));
                 teams.add(team);
             }
         }
@@ -156,9 +136,6 @@ public class Game {
         posList = gameConfig.getIntegerList("lobby");
         if (!posList.isEmpty())
         lobby= new int[]{posList.get(0),posList.get(1),posList.get(2)};
-        System.out.println(gameConfig.getIntegerList("pos1ForBorderOfReplace"));
-        System.out.println(gameConfig.getIntegerList("pos2ForBorderOfReplace"));
-        System.out.println("--------------------------ENDg-------------------------------");
     }
 
     public void reloadValueInConfig() {

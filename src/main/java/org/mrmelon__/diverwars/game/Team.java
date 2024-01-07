@@ -10,6 +10,10 @@ public class Team {
 
     private int[] teamSpawn;
     private int[] teamGenerator;
+    private int[] teamEngine;
+
+    private int[] pos1RangeEngine;
+    private int[] pos2RangeEngine;
 
     public Team(String name, int players, String color, Game game) {
         this.name = name;
@@ -56,5 +60,13 @@ public class Team {
 
     public void setTeamGenerator(int x,int y,int z) {
         this.teamGenerator = new int[]{x, y, z};
+    }
+
+    public int[] getTeamEngine() {
+        return teamEngine;
+    }
+
+    public void setTeamEngine(int x,int y,int z) {
+        this.teamEngine = new int[]{x, y, z};
     }
 }
