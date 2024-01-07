@@ -2,14 +2,20 @@ package org.mrmelon__.diverwars.game;
 
 public class Team {
 
+    private Game game;
+
     private String name;
     private int players;
     private String color;
 
-    public Team(String name, int players, String color) {
+    private int[] teamSpawn;
+    private int[] teamGenerator;
+
+    public Team(String name, int players, String color, Game game) {
         this.name = name;
         this.players = players;
         this.color = color;
+        this.game = game;
     }
 
     public String getName() {
@@ -34,5 +40,21 @@ public class Team {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public int[] getTeamSpawn() {
+        return teamSpawn;
+    }
+
+    public void setTeamSpawn(int x,int y,int z) {
+        this.teamSpawn = new int[]{x, y, z};
+    }
+
+    public int[] getTeamGenerator() {
+        return teamGenerator;
+    }
+
+    public void setTeamGenerator(int x,int y,int z) {
+        this.teamGenerator = new int[]{x, y, z};
     }
 }

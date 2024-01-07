@@ -18,6 +18,8 @@ public class Game {
 
     private String world;
 
+    private int[] lobby;
+
     private int[] pos1ForBorderOfReplace;
     private int[] pos2ForBorderOfReplace;
     private HashMap<Location, Material> blocksForReplace;
@@ -76,16 +78,41 @@ public class Game {
     }
 
     public void setAllInConfig() {
+        for (String title : gameConfig.getKeys(false)) {
+            gameConfig.set(title,null);
+        }
         gameConfig.set("name",name);
         gameConfig.set("mapName",mapName);
         gameConfig.set("countOfPlayers",countOfPlayers);
         for (Team team : teams) {
+            System.out.println("-------------------------STARTs------------------------------"); //РАЗБЕРИСЬ С ЭТОЙ ЖОПОЙ
+            System.out.println(gameConfig.get("teams."+team.getName()+".playersCount"));
+            System.out.println(gameConfig.get("teams."+team.getName()+".color"));
+            System.out.println(gameConfig.getIntegerList("teams."+team.getName()+".teamSpawn"));
+            System.out.println(Arrays.toString(team.getTeamSpawn()));
+            System.out.println(gameConfig.getIntegerList("teams."+team.getName()+".teamGenerator"));
+            System.out.println(Arrays.toString(team.getTeamGenerator()));
+            System.out.println("-------------------------------------------------------------");
             gameConfig.set("teams."+team.getName()+".playersCount",team.getPlayers());
             gameConfig.set("teams."+team.getName()+".color",team.getColor());
+            gameConfig.set("teams."+team.getName()+".teamSpawn",team.getTeamSpawn());
+            gameConfig.set("teams."+team.getName()+".teamGenerator",team.getTeamGenerator());
+            System.out.println(gameConfig.get("teams."+team.getName()+".playersCount"));
+            System.out.println(gameConfig.get("teams."+team.getName()+".color"));
+            System.out.println(gameConfig.getIntegerList("teams."+team.getName()+".teamSpawn"));
+            System.out.println(Arrays.toString(team.getTeamSpawn()));
+            System.out.println(gameConfig.getIntegerList("teams."+team.getName()+".teamGenerator"));
+            System.out.println(Arrays.toString(team.getTeamGenerator()));
+            System.out.println("--------------------------ENDs-------------------------------");
         }
         gameConfig.set("world",world);
+        System.out.println(gameConfig.getIntegerList("pos1ForBorderOfReplace"));
+        System.out.println(gameConfig.getIntegerList("pos2ForBorderOfReplace"));
         gameConfig.set("pos1ForBorderOfReplace",pos1ForBorderOfReplace);
         gameConfig.set("pos2ForBorderOfReplace",pos2ForBorderOfReplace);
+        System.out.println(gameConfig.getIntegerList("pos1ForBorderOfReplace"));
+        System.out.println(gameConfig.getIntegerList("pos2ForBorderOfReplace"));
+        gameConfig.set("lobby",lobby);
     }
 
     public void getAllFromConfig() { // надо реализовать проверку на существование приколов
@@ -95,14 +122,35 @@ public class Game {
         if (gameConfig.contains("teams")) {
             for (String teamName : gameConfig.getConfigurationSection("teams").getKeys(false)) {
                 String[] teamsConfig = gameConfig.getConfigurationSection("teams." + teamName).getKeys(false).toArray(new String[0]);
-                teams.add(new Team(teamName, gameConfig.getInt(teamsConfig[0]), gameConfig.getString(teamsConfig[0])));
+                Team team = new Team(teamName, gameConfig.getInt("teams."+teamName+"."+teamsConfig[0]), gameConfig.getString("teams."+teamName+"."+teamsConfig[1]),this);
+                List<Integer> posList = gameConfig.getIntegerList("teams."+teamName+".teamSpawn");
+                if (!posList.isEmpty())
+                    team.setTeamSpawn(posList.get(0),posList.get(1),posList.get(2));
+                posList = gameConfig.getIntegerList("teams."+teamName+".teamGenerator");
+                if (!posList.isEmpty())
+                    team.setTeamGenerator(posList.get(0),posList.get(1),posList.get(2));
+                System.out.println("-------------------------STARTg-----------------------------");
+                System.out.println(gameConfig.getInt("teams."+teamName+"."+teamsConfig[0]));
+                System.out.println(gameConfig.getString("teams."+teamName+"."+teamsConfig[1]));
+                System.out.println(gameConfig.getIntegerList("teams."+teamName+".teamSpawn"));
+                System.out.println(gameConfig.getIntegerList("teams."+teamName+".teamGenerator"));
+
+                teams.add(team);
             }
         }
         world=gameConfig.getString("world");
         List<Integer> posList = gameConfig.getIntegerList("pos1ForBorderOfReplace");
+        if (!posList.isEmpty())
         pos1ForBorderOfReplace= new int[]{posList.get(0),posList.get(1),posList.get(2)};
         posList = gameConfig.getIntegerList("pos2ForBorderOfReplace");
+        if (!posList.isEmpty())
         pos2ForBorderOfReplace= new int[]{posList.get(0),posList.get(1),posList.get(2)};
+        posList = gameConfig.getIntegerList("lobby");
+        if (!posList.isEmpty())
+        lobby= new int[]{posList.get(0),posList.get(1),posList.get(2)};
+        System.out.println(gameConfig.getIntegerList("pos1ForBorderOfReplace"));
+        System.out.println(gameConfig.getIntegerList("pos2ForBorderOfReplace"));
+        System.out.println("--------------------------ENDg-------------------------------");
     }
 
     public void reloadValueInConfig() {
@@ -165,7 +213,7 @@ public class Game {
     public void addTeam(String nameOfTeam, int countOfPlayersInTeam, String colorOfTeam) {
 
 
-        teams.add(new Team(nameOfTeam,countOfPlayersInTeam,colorOfTeam));
+        teams.add(new Team(nameOfTeam,countOfPlayersInTeam,colorOfTeam,this));
         countOfPlayers += countOfPlayersInTeam;
 
         reloadValueInConfig();
@@ -174,9 +222,8 @@ public class Game {
     public void removeTeam(String nameOfTeam) {
 
 
-
-        for (Team team : teams) {
-            if (team.getName().equals(nameOfTeam)) {
+        for (Team team : teams.toArray(new Team[0])) {
+            if ((team.getName()).equals(nameOfTeam)) {
                 countOfPlayers -= team.getPlayers();
                 teams.remove(team);
                 team = null;
@@ -185,6 +232,21 @@ public class Game {
 
         reloadValueInConfig();
 
+    }
+
+    public List<Team> getTeams() {
+        return teams;
+    }
+
+    public Team getTeamByName(String name) {
+        for (Team team : teams.toArray(new Team[0])) {
+            if (team.getName().equals(name)) return team;
+        }
+        return null;
+    }
+
+    public void setTeams(List<Team> teams) {
+        this.teams = teams;
     }
 
     public String getName() {
@@ -243,6 +305,16 @@ public class Game {
 
     public void setPos2ForBorderOfReplace(int x,int y,int z) {
         this.pos2ForBorderOfReplace = new int[]{x, y, z};
+
+        reloadValueInConfig();
+    }
+
+    public int[] getLobby() {
+        return lobby;
+    }
+
+    public void setLobby(int x,int y,int z) {
+        this.lobby = new int[]{x, y, z};
 
         reloadValueInConfig();
     }

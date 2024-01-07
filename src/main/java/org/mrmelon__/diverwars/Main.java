@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mrmelon__.diverwars.commands.GameSettingsCMD;
 import org.mrmelon__.diverwars.game.GameManager;
+import org.mrmelon__.diverwars.game.Team;
 import org.mrmelon__.diverwars.game.events.BlockActionEvent;
 
 import java.io.File;
@@ -40,12 +41,9 @@ public final class Main extends JavaPlugin {
 
         gameManager = new GameManager();
 
-        Set<String> sett = gameManager.getGameByName("guga").getGameConfig().getConfigurationSection("ts").getKeys(false);
-        System.out.println(sett);
-        String[] setti = sett.toArray(new String[0]);
-        System.out.println(Arrays.toString(setti));
-        System.out.println(setti[0]);
-        System.out.println(setti[1]);
+        for (Team team : (gameManager.getGameByName("guga").getTeams())) {
+            System.out.println(team.getName());
+        }
 
         //
 

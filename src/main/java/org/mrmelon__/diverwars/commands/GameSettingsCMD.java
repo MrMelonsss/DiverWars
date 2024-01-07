@@ -25,16 +25,22 @@ public class GameSettingsCMD implements CommandExecutor {
         }
 
         if (strings.length==0) {
-            commandSender.sendMessage("Please, use /game [arg]");
+            commandSender.sendMessage("Please, use /diverwars [arg]");
         } else {
-            //
+
+
+            // BLOCK DEL
+
             if (strings[0].equals("tp")) {
                 player.teleport(new Location(Bukkit.getWorld(strings[1]),0,100,0));
             }
             if (strings[0].equals("check")) {
                 System.out.println(Main.getInstance().getGameManager().getGameByName(strings[1]).getBlocksForReplace());
             }
-            //
+
+            // BLOCK DEL
+
+
             switch (strings[0]){
                 case "create":
                     if (strings.length==2) {
@@ -44,17 +50,27 @@ public class GameSettingsCMD implements CommandExecutor {
                             return true;
                         }
                         commandSender.sendMessage("This game is already exist");
-                    } else commandSender.sendMessage("Please, use /game create [game]");
+                    } else commandSender.sendMessage("Please, use /diverwars create [game]");
                     break;
-                case "reload":
+                case "reloadIN":
                     if (strings.length==2) {
                         if (Main.getInstance().getGameManager().nameExist(strings[1])) {
                             Main.getInstance().getGameManager().getGameByName(strings[1]).reloadValueInConfig();
-                            commandSender.sendMessage("Game "+strings[1]+" was reloaded");
+                            commandSender.sendMessage("Game "+strings[1]+" was reloaded IN");
                             return true;
                         }
                         commandSender.sendMessage("This game is not defined");
-                    } else commandSender.sendMessage("Please, use /game reload [game]");
+                    } else commandSender.sendMessage("Please, use /diverwars reloadIN [game]");
+                    break;
+                case "reloadOUT":
+                    if (strings.length==2) {
+                        if (Main.getInstance().getGameManager().nameExist(strings[1])) {
+                            Main.getInstance().getGameManager().getGameByName(strings[1]).getAllFromConfig();
+                            commandSender.sendMessage("Game "+strings[1]+" was reloaded OUT");
+                            return true;
+                        }
+                        commandSender.sendMessage("This game is not defined");
+                    } else commandSender.sendMessage("Please, use /diverwars reloadOUT [game]");
                     break;
                 case "delete":
                     if (strings.length==2) {
@@ -64,11 +80,11 @@ public class GameSettingsCMD implements CommandExecutor {
                             return true;
                         }
                         commandSender.sendMessage("This game is not defined");
-                    } else commandSender.sendMessage("Please, use /game delete [game]");
+                    } else commandSender.sendMessage("Please, use /diverwars delete [game]");
                     break;
                 case "team":// make lists of objects {game,team}
                     if (strings.length==1) {
-                        commandSender.sendMessage("Please, use /game team [arg] [game] [values]");
+                        commandSender.sendMessage("Please, use /diverwars team [arg] [game] [values]");
                     } else {
                         switch (strings[1]) {
                             case "add":
@@ -81,10 +97,10 @@ public class GameSettingsCMD implements CommandExecutor {
                                         }
                                         commandSender.sendMessage("This game is not defined");
                                     } else
-                                        commandSender.sendMessage("Please, use /game team add " + strings[2] + " [name] [playersCount] [color]");
+                                        commandSender.sendMessage("Please, use /diverwars team add " + strings[2] + " [name] [playersCount] [color]");
 
                                 } else
-                                    commandSender.sendMessage("Please, use /game team add [game] [name] [playersCount] [color]");
+                                    commandSender.sendMessage("Please, use /diverwars team add [game] [name] [playersCount] [color]");
                                 break;
                             case "remove":
                                 if (strings.length >= 3) {
@@ -96,17 +112,60 @@ public class GameSettingsCMD implements CommandExecutor {
                                         }
                                         commandSender.sendMessage("This game is not defined");
                                     } else
-                                        commandSender.sendMessage("Please, use /game team add " + strings[2] + " [name]");
+                                        commandSender.sendMessage("Please, use /diverwars team remove " + strings[2] + " [name]");
 
                                 } else
-                                    commandSender.sendMessage("Please, use /game team add [game] [name]");
+                                    commandSender.sendMessage("Please, use /diverwars team remove [game] [name]");
                                 break;
+                            case "set":
+                                if (strings.length==2) {
+                                    commandSender.sendMessage("Please, use /diverwars team set [arg] [game] [value]");
+                                } else {
+                                    switch (strings[2]) {
+                                        case "teamSpawn":
+                                            if (strings.length >= 3) {
+                                                if (strings.length == 5) {
+                                                    if (Main.getInstance().getGameManager().nameExist(strings[3])) {
+                                                        if (Main.getInstance().getGameManager().getGameByName(strings[3]).getTeamByName(strings[4])==null) {
+                                                            commandSender.sendMessage("this team is not defined");
+                                                            return false;
+                                                        }
+                                                        Main.getInstance().getGameManager().getGameByName(strings[3]).getTeamByName(strings[4]).setTeamSpawn(player.getLocation().getBlockX(),player.getLocation().getBlockY(),player.getLocation().getBlockZ());
+                                                        Main.getInstance().getGameManager().getGameByName(strings[3]).reloadValueInConfig();
+                                                        commandSender.sendMessage("teamSpawn location of " + strings[3] + " game was changed on "+Arrays.toString(Main.getInstance().getGameManager().getGameByName(strings[3]).getTeamByName(strings[4]).getTeamSpawn()));
+                                                        return true;
+                                                    }
+                                                    commandSender.sendMessage("This game is not defined");
+                                                } else commandSender.sendMessage("Please, use /diverwars team set teamSpawn [game] [team name]");
+
+                                            } else commandSender.sendMessage("Please, use /diverwars team set teamSpawn [game]");
+                                            break;
+                                        case "teamGenerator":
+                                            if (strings.length >= 3) {
+                                                if (strings.length == 5) {
+                                                    if (Main.getInstance().getGameManager().nameExist(strings[3])) {
+                                                        if (Main.getInstance().getGameManager().getGameByName(strings[3]).getTeamByName(strings[4])==null) {
+                                                            commandSender.sendMessage("this team is not defined");
+                                                            return false;
+                                                        }
+                                                        Main.getInstance().getGameManager().getGameByName(strings[3]).getTeamByName(strings[4]).setTeamGenerator(player.getLocation().getBlockX(),player.getLocation().getBlockY(),player.getLocation().getBlockZ());
+                                                        Main.getInstance().getGameManager().getGameByName(strings[3]).reloadValueInConfig();
+                                                        commandSender.sendMessage("teamGenerator location of " + strings[3] + " game was changed on "+Arrays.toString(Main.getInstance().getGameManager().getGameByName(strings[3]).getTeamByName(strings[4]).getTeamGenerator()));
+                                                        return true;
+                                                    }
+                                                    commandSender.sendMessage("This game is not defined");
+                                                } else commandSender.sendMessage("Please, use /diverwars team set teamGenerator [game] [team name]");
+
+                                            } else commandSender.sendMessage("Please, use /diverwars team set teamGenerator [game]");
+                                            break;
+                                    }
+                                }
                         }
                     }
                     break;
                 case "set":
                     if (strings.length==1) {
-                        commandSender.sendMessage("Please, use /game set [arg] [game] [value]");
+                        commandSender.sendMessage("Please, use /diverwars set [arg] [game] [value]");
                     } else {
                         switch (strings[1]) {
                             case "name":
@@ -118,9 +177,9 @@ public class GameSettingsCMD implements CommandExecutor {
                                             return true;
                                         }
                                         commandSender.sendMessage("This game is not defined");
-                                    } else commandSender.sendMessage("Please, use /game set name "+strings[2]+" [value]");
+                                    } else commandSender.sendMessage("Please, use /diverwars set name "+strings[2]+" [value]");
 
-                                } else commandSender.sendMessage("Please, use /game set name game [value]");
+                                } else commandSender.sendMessage("Please, use /diverwars set name game [value]");
                                 break;
                             case "mapName":
                                 if (strings.length>=3) {
@@ -131,9 +190,9 @@ public class GameSettingsCMD implements CommandExecutor {
                                             return true;
                                         }
                                         commandSender.sendMessage("This game is not defined");
-                                    } else commandSender.sendMessage("Please, use /game set mapName "+strings[2]+" [value]");
+                                    } else commandSender.sendMessage("Please, use /diverwars set mapName "+strings[2]+" [value]");
 
-                                } else commandSender.sendMessage("Please, use /game set mapName game [value]");
+                                } else commandSender.sendMessage("Please, use /diverwars set mapName game [value]");
                                 break;
                             case "countOfPlayers":
                                 if (strings.length>=3) {
@@ -144,9 +203,9 @@ public class GameSettingsCMD implements CommandExecutor {
                                             return true;
                                         }
                                         commandSender.sendMessage("This game is not defined");
-                                    } else commandSender.sendMessage("Please, use /game set countOfPlayers "+strings[2]+" [value]");
+                                    } else commandSender.sendMessage("Please, use /diverwars set countOfPlayers "+strings[2]+" [value]");
 
-                                } else commandSender.sendMessage("Please, use /game set countOfPlayers game [value]");
+                                } else commandSender.sendMessage("Please, use /diverwars set countOfPlayers game [value]");
                                 break;
                             case "world":
                                 if (strings.length>=3) {
@@ -158,9 +217,9 @@ public class GameSettingsCMD implements CommandExecutor {
                                             return true;
                                         }
                                         commandSender.sendMessage("This game is not defined");
-                                    } else commandSender.sendMessage("Please, use /game set world "+strings[2]+" [world folder]");
+                                    } else commandSender.sendMessage("Please, use /diverwars set world "+strings[2]+" [world folder]");
 
-                                } else commandSender.sendMessage("Please, use /game set world game [world folder]");
+                                } else commandSender.sendMessage("Please, use /diverwars set world game [world folder]");
                                 break;
                             case "pos1":
                                 if (strings.length>=3) {
@@ -171,9 +230,9 @@ public class GameSettingsCMD implements CommandExecutor {
                                             return true;
                                         }
                                         commandSender.sendMessage("This game is not defined");
-                                    } else commandSender.sendMessage("Please, use /game set pos1 "+strings[2]);
+                                    } else commandSender.sendMessage("Please, use /diverwars set pos1 "+strings[2]);
 
-                                } else commandSender.sendMessage("Please, use /game set pos1 game");
+                                } else commandSender.sendMessage("Please, use /diverwars set pos1 game");
                                 break;
                             case "pos2":
                                 if (strings.length>=3) {
@@ -184,9 +243,22 @@ public class GameSettingsCMD implements CommandExecutor {
                                             return true;
                                         }
                                         commandSender.sendMessage("This game is not defined");
-                                    } else commandSender.sendMessage("Please, use /game set pos2 "+strings[2]);
+                                    } else commandSender.sendMessage("Please, use /diverwars set pos2 "+strings[2]);
 
-                                } else commandSender.sendMessage("Please, use /game set pos2 game");
+                                } else commandSender.sendMessage("Please, use /diverwars set pos2 game");
+                                break;
+                            case "lobby":
+                                if (strings.length>=3) {
+                                    if (strings.length==3) {
+                                        if (Main.getInstance().getGameManager().nameExist(strings[2])) {
+                                            Main.getInstance().getGameManager().getGameByName(strings[2]).setLobby(player.getLocation().getBlockX(),player.getLocation().getBlockY(),player.getLocation().getBlockZ());
+                                            commandSender.sendMessage("lobby location of " + strings[2] + " game was changed on "+Arrays.toString(Main.getInstance().getGameManager().getGameByName(strings[2]).getLobby()));
+                                            return true;
+                                        }
+                                        commandSender.sendMessage("This game is not defined");
+                                    } else commandSender.sendMessage("Please, use /diverwars set lobby "+strings[2]);
+
+                                } else commandSender.sendMessage("Please, use /diverwars set lobby game");
                                 break;
                         }
                     }
