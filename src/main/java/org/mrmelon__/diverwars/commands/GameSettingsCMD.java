@@ -37,6 +37,18 @@ public class GameSettingsCMD implements CommandExecutor {
             if (strings[0].equals("check")) {
                 System.out.println(Main.getInstance().getGameManager().getGameByName(strings[1]).getBlocksForReplace());
             }
+            if (strings[0].equals("teamadd")) {
+                Main.getInstance().getGameManager().getGameByName(strings[1]).getTeamByName(strings[2]).addPlayersInTeam(player);
+                System.out.println(Main.getInstance().getGameManager().getGameByName(strings[1]).getTeamPlayerByPlayer(player));
+            }
+            if (strings[0].equals("switchTrue")) {
+                Main.getInstance().getGameManager().getGameByName(strings[1]).getTeamByName(strings[2]).isRegenerationAir=true;
+                System.out.println(Main.getInstance().getGameManager().getGameByName(strings[1]).getTeamByName(strings[2]).isRegenerationAir);
+            }
+            if (strings[0].equals("switchFalse")) {
+                Main.getInstance().getGameManager().getGameByName(strings[1]).getTeamByName(strings[2]).isRegenerationAir=false;
+                System.out.println(Main.getInstance().getGameManager().getGameByName(strings[1]).getTeamByName(strings[2]).isRegenerationAir);
+            }
 
             // BLOCK DEL
 
@@ -175,6 +187,42 @@ public class GameSettingsCMD implements CommandExecutor {
                                                 } else commandSender.sendMessage("Please, use /diverwars team set teamEngine [game] [team name]");
 
                                             } else commandSender.sendMessage("Please, use /diverwars team set teamEngine [game]");
+                                            break;
+                                        case "pos1RangeEngine":
+                                            if (strings.length >= 3) {
+                                                if (strings.length == 5) {
+                                                    if (Main.getInstance().getGameManager().nameExist(strings[3])) {
+                                                        if (Main.getInstance().getGameManager().getGameByName(strings[3]).getTeamByName(strings[4])==null) {
+                                                            commandSender.sendMessage("this team is not defined");
+                                                            return false;
+                                                        }
+                                                        Main.getInstance().getGameManager().getGameByName(strings[3]).getTeamByName(strings[4]).setPos1RangeEngine(player.getLocation().getBlockX(),player.getLocation().getBlockY(),player.getLocation().getBlockZ());
+                                                        Main.getInstance().getGameManager().getGameByName(strings[3]).reloadValueInConfig();
+                                                        commandSender.sendMessage("pos1RangeEngine location of " + strings[3] + " game was changed on "+Arrays.toString(Main.getInstance().getGameManager().getGameByName(strings[3]).getTeamByName(strings[4]).getPos1RangeEngine()));
+                                                        return true;
+                                                    }
+                                                    commandSender.sendMessage("This game is not defined");
+                                                } else commandSender.sendMessage("Please, use /diverwars team set pos1RangeEngine [game] [team name]");
+
+                                            } else commandSender.sendMessage("Please, use /diverwars team set pos1RangeEngine [game]");
+                                            break;
+                                        case "pos2RangeEngine":
+                                            if (strings.length >= 3) {
+                                                if (strings.length == 5) {
+                                                    if (Main.getInstance().getGameManager().nameExist(strings[3])) {
+                                                        if (Main.getInstance().getGameManager().getGameByName(strings[3]).getTeamByName(strings[4])==null) {
+                                                            commandSender.sendMessage("this team is not defined");
+                                                            return false;
+                                                        }
+                                                        Main.getInstance().getGameManager().getGameByName(strings[3]).getTeamByName(strings[4]).setPos2RangeEngine(player.getLocation().getBlockX(),player.getLocation().getBlockY(),player.getLocation().getBlockZ());
+                                                        Main.getInstance().getGameManager().getGameByName(strings[3]).reloadValueInConfig();
+                                                        commandSender.sendMessage("pos2RangeEngine location of " + strings[3] + " game was changed on "+Arrays.toString(Main.getInstance().getGameManager().getGameByName(strings[3]).getTeamByName(strings[4]).getPos2RangeEngine()));
+                                                        return true;
+                                                    }
+                                                    commandSender.sendMessage("This game is not defined");
+                                                } else commandSender.sendMessage("Please, use /diverwars team set pos2RangeEngine [game] [team name]");
+
+                                            } else commandSender.sendMessage("Please, use /diverwars team set pos2RangeEngine [game]");
                                             break;
                                     }
                                 }

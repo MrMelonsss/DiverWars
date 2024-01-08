@@ -7,16 +7,19 @@ public class TeamPlayer {
 
     private Team team;
 
-    public boolean isRegenerationAir;
-
     private Player player;
 
     private Armor armor;
+
+    public boolean airEventIsWorking;
 
 
     public TeamPlayer(Team team, Player player) {
         this.team = team;
         this.player = player;
+
+        armor = Armor.NETHERITE_DIVING_SUIT;
+        airEventIsWorking=false;
     }
 
     public Player getPlayer() {

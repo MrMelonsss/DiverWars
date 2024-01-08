@@ -95,6 +95,8 @@ public class Game {
             gameConfig.set("teams."+team.getName()+".teamSpawn",team.getTeamSpawn());
             gameConfig.set("teams."+team.getName()+".teamGenerator",team.getTeamGenerator());
             gameConfig.set("teams."+team.getName()+".teamEngine",team.getTeamEngine());
+            gameConfig.set("teams."+team.getName()+".pos1RangeEngine",team.getPos1RangeEngine());
+            gameConfig.set("teams."+team.getName()+".pos2RangeEngine",team.getPos2RangeEngine());
         }
         gameConfig.set("world",world);
         gameConfig.set("pos1ForBorderOfReplace",pos1ForBorderOfReplace);
@@ -123,6 +125,12 @@ public class Game {
                 posList = gameConfig.getIntegerList("teams."+teamName+".teamEngine");
                 if (!posList.isEmpty())
                     team.setTeamEngine(posList.get(0),posList.get(1),posList.get(2));
+                posList = gameConfig.getIntegerList("teams."+teamName+".pos1RangeEngine");
+                if (!posList.isEmpty())
+                    team.setPos1RangeEngine(posList.get(0),posList.get(1),posList.get(2));
+                posList = gameConfig.getIntegerList("teams."+teamName+".pos2RangeEngine");
+                if (!posList.isEmpty())
+                    team.setPos2RangeEngine(posList.get(0),posList.get(1),posList.get(2));
                 teams.add(team);
             }
         }

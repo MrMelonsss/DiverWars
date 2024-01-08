@@ -19,6 +19,10 @@ public class Team {
     private int[] teamGenerator;
     private int[] teamEngine;
 
+
+    public boolean isRegenerationAir;
+    private int airPercent; // 100% = 2000 1% = 20
+
     private int[] pos1RangeEngine;
     private int[] pos2RangeEngine;
 
@@ -27,6 +31,9 @@ public class Team {
         this.players = players;
         this.color = color;
         this.game = game;
+
+        isRegenerationAir=true;
+        airPercent = 2000;
 
         playersInTeam = new ArrayList<>();
     }
@@ -85,5 +92,33 @@ public class Team {
 
     public void setPlayersInTeam(List<TeamPlayer> playersInTeam) {
         this.playersInTeam = playersInTeam;
+    }
+
+    public void addPlayersInTeam(Player player) {
+        playersInTeam.add(new TeamPlayer(this,player));
+    }
+
+    public int[] getPos1RangeEngine() {
+        return pos1RangeEngine;
+    }
+
+    public void setPos1RangeEngine(int x,int y,int z) {
+        this.pos1RangeEngine = new int[]{x, y, z};
+    }
+
+    public int[] getPos2RangeEngine() {
+        return pos2RangeEngine;
+    }
+
+    public void setPos2RangeEngine(int x,int y,int z) {
+        this.pos2RangeEngine = new int[]{x, y, z};
+    }
+
+    public int getAirPercent() {
+        return airPercent;
+    }
+
+    public void setAirPercent(int airPercent) {
+        this.airPercent = airPercent;
     }
 }
