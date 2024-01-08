@@ -159,8 +159,21 @@ public class Game {
         this.gameConfig = gameConfig;
     }
 
+    public TeamPlayer getTeamPlayerByPlayer(Player player) {
+        for (Team team : teams) {
+            for (TeamPlayer teamPlayer : team.getPlayersInTeam()) {
+                if (teamPlayer.getPlayer().equals(player)) {
+                    return teamPlayer;
+                }
+            }
+        }
+        return null;
+    }
+
     public void startGame() {
         gameStatement=true;
+        //join in team all peoples
+
         //tp teamSpawn
     }
     public void endGame() {
@@ -172,7 +185,7 @@ public class Game {
         if (countOfPlayersInSession<countOfPlayers) {
             countOfPlayersInSession++;
             playersInSession.add(player);
-            //tp lobby of game
+            player.teleport(new Location(Bukkit.getWorld(world),lobby[0],lobby[1],lobby[2]));
             // сделать норм сообщение
             Bukkit.broadcastMessage(player.getName()+" join in the game ["+countOfPlayersInSession+"/"+countOfPlayers+"]");
             if (countOfPlayersInSession==countOfPlayers) {

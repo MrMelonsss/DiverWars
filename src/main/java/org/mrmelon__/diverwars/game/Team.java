@@ -1,5 +1,10 @@
 package org.mrmelon__.diverwars.game;
 
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class Team {
 
     private Game game;
@@ -7,6 +12,8 @@ public class Team {
     private String name;
     private int players;
     private String color;
+
+    private List<TeamPlayer> playersInTeam;
 
     private int[] teamSpawn;
     private int[] teamGenerator;
@@ -20,6 +27,8 @@ public class Team {
         this.players = players;
         this.color = color;
         this.game = game;
+
+        playersInTeam = new ArrayList<>();
     }
 
     public String getName() {
@@ -68,5 +77,13 @@ public class Team {
 
     public void setTeamEngine(int x,int y,int z) {
         this.teamEngine = new int[]{x, y, z};
+    }
+
+    public List<TeamPlayer> getPlayersInTeam() {
+        return playersInTeam;
+    }
+
+    public void setPlayersInTeam(List<TeamPlayer> playersInTeam) {
+        this.playersInTeam = playersInTeam;
     }
 }
