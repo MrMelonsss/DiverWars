@@ -4,266 +4,123 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityAirChangeEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.mrmelon__.diverwars.Main;
 import org.mrmelon__.diverwars.game.Game;
+import org.mrmelon__.diverwars.game.Team;
 import org.mrmelon__.diverwars.game.TeamPlayer;
 
 public class EngineEvent implements Listener {
 
-    public void airEvent(TeamPlayer teamPlayer, EntityAirChangeEvent event) {
-        long mult = teamPlayer.getArmor().getMultiplySecond();
-        int regen = (int) (mult*4);
-        final int[] curr = {event.getAmount()};
-        teamPlayer.airEventIsWorking=true;
-        //Bukkit Scheduler
-        //вывод колва воздуха в балонах
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (Game.ds==1) {
-                    event.setAmount(curr[0]);
-                    Game.ds=0;
-                } else {
-                    event.setAmount(curr[0]-1);
-                    Game.ds=1;
-                }
-            }
-        }.runTaskTimer(Main.getInstance(),0L,1L);
-
-        new BukkitRunnable(){
-            @Override
-            public void run() {
-
-                Player player = teamPlayer.getPlayer();
-
-                System.out.println("event"+player.getMaximumAir());
-
-                if (player.getEyeLocation().getBlock().getType() == Material.WATER) {
-                    System.out.println("water");
-                    if (event.getAmount()==-21) {
-                        System.out.println("-21");
-                        event.setAmount(0);
-                    } else {
-                        System.out.println("--"+ curr[0]);
-                        event.setAmount(curr[0] - 1);
-                        System.out.println("--"+ curr[0]);
-                    }
-                    if (player.isDead()) {
-                        System.out.println("CANCEL Death");
-                        teamPlayer.airEventIsWorking=false;
-                        this.cancel();
-                    }
-                } else {
-                    System.out.println("reg");
-                    if (event.getAmount()>=300) {
-                        System.out.println("CANCEL Regen");
-                        teamPlayer.airEventIsWorking=false;
-                        this.cancel();
-                    } else if (checkRegion(teamPlayer)) {
-                        // вывод колва воздуха в куполе
-                        if (teamPlayer.getTeam().isRegenerationAir) {
-                            if (300-event.getAmount()<regen) {
-                                event.setAmount(event.getAmount()+(300- event.getAmount()));
-                            } else {
-                                event.setAmount(event.getAmount() + regen);
-                            }
-                        } else {
-                            if (300-player.getRemainingAir()<regen) {
-                                if (300-player.getRemainingAir()<=teamPlayer.getTeam().getAirPercent()) {
-                                    player.setRemainingAir(player.getRemainingAir() + (300 - teamPlayer.getTeam().getAirPercent()));
-                                    teamPlayer.getTeam().setAirPercent(0);
-                                    // mess zero perc of air
-                                } else {
-                                    player.setRemainingAir(player.getRemainingAir() + (300 - player.getRemainingAir()));
-                                    teamPlayer.getTeam().setAirPercent(teamPlayer.getTeam().getAirPercent()-(300 - player.getRemainingAir()));
-                                }
-                            } else {
-                                if (regen>teamPlayer.getTeam().getAirPercent()) {
-                                    player.setRemainingAir(player.getRemainingAir() + teamPlayer.getTeam().getAirPercent());
-                                    teamPlayer.getTeam().setAirPercent(0);
-                                    // mess zero perc of air
-                                } else {
-                                    player.setRemainingAir(player.getRemainingAir() + regen);
-                                    teamPlayer.getTeam().setAirPercent(teamPlayer.getTeam().getAirPercent()-regen);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                curr[0] = event.getAmount();
-
-                System.out.println("-----------------------------------");
-                System.out.println(curr[0]);
-                System.out.println(event.getAmount());
-                System.out.println(teamPlayer.getTeam().getAirPercent());
-                System.out.println("-----------------------------------");
-
-            }
-
-        }.runTaskTimer(Main.getInstance(),0L,mult);
-    }
-
     @EventHandler
     public void onBubble(EntityAirChangeEvent event) {
 
-        if (event.getEntityType()== EntityType.PLAYER) {
+        if (event.getEntityType() == EntityType.PLAYER) {
             Player player = (Player) event.getEntity();
             Game game = Main.getInstance().getGameManager().getGameByWorld(player.getWorld().getName());
-            if (game!=null) {
+            if (game != null) {
                 TeamPlayer teamPlayer = game.getTeamPlayerByPlayer(player);
                 if (teamPlayer != null) {
-                    if (!teamPlayer.airEventIsWorking) {
-                        System.out.println("teamPlayer");
-                        //airEvent(teamPlayer, event);
+                    long mult = teamPlayer.getArmor().getMultiplySecond();
+                    int temp = teamPlayer.getTempForMultiply();
+                    int regen = (int) (mult * 4);
+                    int curr = teamPlayer.getCurrentAirCount();
+                    Team team = getTeamByEngineRegion(game,player);
+                    //Bukkit Scheduler
+                    //вывод колва воздуха в балонах
 
-                        long mult = teamPlayer.getArmor().getMultiplySecond();
-                        int regen = (int) (mult*4);
-                        final int[] curr = {event.getAmount()};
-                        teamPlayer.airEventIsWorking=true;
-                        //Bukkit Scheduler
-                        //вывод колва воздуха в балонах
+                    if (temp == mult - 1) {
+                        teamPlayer.setTempForMultiply(0);
 
-                        new BukkitRunnable() {
-                            @Override
-                            public void run() {
-                                if (Game.ds==1) {
-                                    event.setAmount(curr[0]);
-                                    Game.ds=0;
-                                } else {
-                                    event.setAmount(curr[0]-1);
-                                    Game.ds=1;
-                                }
+                        System.out.println("event" + player.getMaximumAir());
+
+                        if (player.getEyeLocation().getBlock().getType() == Material.WATER) {
+                            if (curr == -21) {
+                                event.setAmount(-17);
+                                teamPlayer.setCurrentAirCount(-17);
+                            } else {
+                                event.setAmount(curr - 1);
                             }
-                        }.runTaskTimer(Main.getInstance(),0L,1L);
-
-                        new BukkitRunnable(){
-                            @Override
-                            public void run() {
-
-                                Player player = teamPlayer.getPlayer();
-
-                                System.out.println("event"+player.getMaximumAir());
-
-                                if (player.getEyeLocation().getBlock().getType() == Material.WATER) {
-                                    System.out.println("water");
-                                    if (event.getAmount()==-21) {
-                                        System.out.println("-21");
-                                        event.setAmount(0);
+                            if (player.isDead()) {
+                                System.out.println("CANCEL Death");
+                                teamPlayer.setCurrentAirCount(300);
+                            }
+                        } else {
+                            System.out.println("reg");
+                            if (curr >= 300) {
+                                System.out.println("CANCEL Regen");
+                            } else if (team!=null) { //fasfas
+                                // вывод колва воздуха в куполе
+                                if (teamPlayer.getTeam().isRegenerationAir) {
+                                    if (300 - curr < regen) {
+                                        event.setAmount(300);
                                     } else {
-                                        System.out.println("--"+ curr[0]);
-                                        event.setAmount(curr[0] - 1);
-                                        System.out.println("--"+ curr[0]);
-                                    }
-                                    if (player.isDead()) {
-                                        System.out.println("CANCEL Death");
-                                        teamPlayer.airEventIsWorking=false;
-                                        this.cancel();
+                                        event.setAmount(curr + regen);
                                     }
                                 } else {
-                                    System.out.println("reg");
-                                    if (event.getAmount()>=300) {
-                                        System.out.println("CANCEL Regen");
-                                        teamPlayer.airEventIsWorking=false;
-                                        this.cancel();
-                                    } else if (checkRegion(teamPlayer)) {
-                                        // вывод колва воздуха в куполе
-                                        if (teamPlayer.getTeam().isRegenerationAir) {
-                                            if (300-event.getAmount()<regen) {
-                                                event.setAmount(event.getAmount()+(300- event.getAmount()));
-                                            } else {
-                                                event.setAmount(event.getAmount() + regen);
-                                            }
+                                    if (300 - curr < regen) {
+                                        if (300 - curr >= teamPlayer.getTeam().getAirPercent()) {
+                                            event.setAmount(curr + teamPlayer.getTeam().getAirPercent());
+                                            teamPlayer.getTeam().setAirPercent(0);
+                                            // mess zero perc of air
                                         } else {
-                                            if (300-player.getRemainingAir()<regen) {
-                                                if (300-player.getRemainingAir()<=teamPlayer.getTeam().getAirPercent()) {
-                                                    player.setRemainingAir(player.getRemainingAir() + (300 - teamPlayer.getTeam().getAirPercent()));
-                                                    teamPlayer.getTeam().setAirPercent(0);
-                                                    // mess zero perc of air
-                                                } else {
-                                                    player.setRemainingAir(player.getRemainingAir() + (300 - player.getRemainingAir()));
-                                                    teamPlayer.getTeam().setAirPercent(teamPlayer.getTeam().getAirPercent()-(300 - player.getRemainingAir()));
-                                                }
-                                            } else {
-                                                if (regen>teamPlayer.getTeam().getAirPercent()) {
-                                                    player.setRemainingAir(player.getRemainingAir() + teamPlayer.getTeam().getAirPercent());
-                                                    teamPlayer.getTeam().setAirPercent(0);
-                                                    // mess zero perc of air
-                                                } else {
-                                                    player.setRemainingAir(player.getRemainingAir() + regen);
-                                                    teamPlayer.getTeam().setAirPercent(teamPlayer.getTeam().getAirPercent()-regen);
-                                                }
-                                            }
+                                            event.setAmount(300);
+                                            teamPlayer.getTeam().setAirPercent(teamPlayer.getTeam().getAirPercent() - (300 - curr));
+                                        }
+                                    } else {
+                                        if (regen > teamPlayer.getTeam().getAirPercent()) {
+                                            event.setAmount(curr + teamPlayer.getTeam().getAirPercent());
+                                            teamPlayer.getTeam().setAirPercent(0);
+                                            // mess zero perc of air
+                                        } else {
+                                            event.setAmount(curr + regen);
+                                            teamPlayer.getTeam().setAirPercent(teamPlayer.getTeam().getAirPercent() - regen);
                                         }
                                     }
                                 }
-
-                                curr[0] = event.getAmount();
-
-                                System.out.println("-----------------------------------");
-                                System.out.println(curr[0]);
-                                System.out.println(event.getAmount());
-                                System.out.println(teamPlayer.getTeam().getAirPercent());
-                                System.out.println("-----------------------------------");
-
                             }
+                        }
 
-                        }.runTaskTimer(Main.getInstance(),0L,mult);
+                        teamPlayer.setCurrentAirCount(event.getAmount());
+
+                        System.out.println("-----------------------------------");
+                        System.out.println(curr);
+                        System.out.println(event.getAmount());
+                        System.out.println(teamPlayer.getTeam().getAirPercent());
+                        System.out.println("-----------------------------------");
+
+                    } else {
+                        teamPlayer.setTempForMultiply(temp + 1);
+                        event.setAmount(temp % 2 == 0 ? curr - 1 : curr);
                     }
-                    //event.setCancelled(true);
-
                 }
             }
-//            if (player.getEyeLocation().getBlock().getType() != Material.WATER) {
-//                if (event.getAmount()<=140) event.setAmount(300);
-//            } else
-//                if (event.getAmount()>=299)  event.setAmount(200);
-//                else if (event.getAmount()>200) {
-//                    if (Game.ds==1) {
-//                        Game.ds = 0;
-//                        event.setAmount(209);
-//                    } else {
-//                        event.setAmount(210);
-//                        Game.ds = Game.ds + 1;
-//                    }
-//                }
-//            System.out.println(event.getAmount());
-
-//            event.setCancelled(true);
-//            new BukkitRunnable() {
-//
-//                @Override
-//                public void run() {
-//                    System.out.println("tasktimer");
-//                    event.setCancelled(false);
-//                    System.out.println(event.getAmount());
-//                    this.cancel();
-//                }
-//
-//            }.runTaskLater(Main.getInstance(),20L);
-
         }
-
-
-
-
     }
 
-    private boolean checkRegion(TeamPlayer teamPlayer) {
-        int x1 = teamPlayer.getTeam().getPos1RangeEngine()[0];
-        int y1 =  teamPlayer.getTeam().getPos1RangeEngine()[1];
-        int z1 =  teamPlayer.getTeam().getPos1RangeEngine()[2];
-        int x2 =  teamPlayer.getTeam().getPos2RangeEngine()[0];
-        int y2 =  teamPlayer.getTeam().getPos2RangeEngine()[1];
-        int z2 =  teamPlayer.getTeam().getPos2RangeEngine()[2];
-        int xBlock = teamPlayer.getPlayer().getLocation().getBlockX();
-        int yBlock = teamPlayer.getPlayer().getLocation().getBlockY();
-        int zBlock = teamPlayer.getPlayer().getLocation().getBlockZ();
+    private Team getTeamByEngineRegion(Game game, Player player) {
+        for (Team team : game.getTeams()) {
+            if (checkRegion(team,player)) {
+                return team;
+            }
+        }
+        return null;
+    }
+
+    private boolean checkRegion(Team team, Player player) {
+        int x1 = team.getPos1RangeEngine()[0];
+        int y1 =  team.getPos1RangeEngine()[1];
+        int z1 =  team.getPos1RangeEngine()[2];
+        int x2 =  team.getPos2RangeEngine()[0];
+        int y2 =  team.getPos2RangeEngine()[1];
+        int z2 =  team.getPos2RangeEngine()[2];
+        int xBlock = player.getLocation().getBlockX();
+        int yBlock = player.getLocation().getBlockY();
+        int zBlock = player.getLocation().getBlockZ();
 
         if (x1>x2) {
             int temp=x1;

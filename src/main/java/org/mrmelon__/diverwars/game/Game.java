@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.*;
 
 public class Game {
+    public static int ds=0;
 
     private String name;
     private String mapName;
