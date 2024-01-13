@@ -7,6 +7,7 @@ import org.mrmelon__.diverwars.game.GameManager;
 import org.mrmelon__.diverwars.game.Team;
 import org.mrmelon__.diverwars.game.events.BlockActionEvent;
 import org.mrmelon__.diverwars.game.events.EngineEvent;
+import org.mrmelon__.diverwars.game.events.JoinEvent;
 
 import java.io.File;
 
@@ -38,6 +39,7 @@ public final class Main extends JavaPlugin {
         getCommand("diverwars").setExecutor(new GameSettingsCMD());
         Bukkit.getPluginManager().registerEvents(new BlockActionEvent(),this);
         Bukkit.getPluginManager().registerEvents(new EngineEvent(),this);
+        Bukkit.getPluginManager().registerEvents(new JoinEvent(),this);
 
         gameManager = new GameManager();
 

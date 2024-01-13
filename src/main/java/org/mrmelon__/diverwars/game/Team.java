@@ -22,6 +22,7 @@ public class Team {
 
     public boolean isRegenerationAir;
     private int airPercent; // 100% = 2000 1% = 20
+    private int maxAirPercent;
 
     private int[] pos1RangeEngine;
     private int[] pos2RangeEngine;
@@ -33,7 +34,8 @@ public class Team {
         this.game = game;
 
         isRegenerationAir=true;
-        airPercent = 2000;
+        maxAirPercent = 2000;
+        airPercent = maxAirPercent;
 
         playersInTeam = new ArrayList<>();
     }
@@ -120,5 +122,13 @@ public class Team {
 
     public void setAirPercent(int airPercent) {
         this.airPercent = airPercent;
+    }
+
+    public int getMaxAirPercent() {
+        return maxAirPercent;
+    }
+
+    public void setMaxAirPercent(int maxAirPercent) {
+        this.maxAirPercent = maxAirPercent;
     }
 }

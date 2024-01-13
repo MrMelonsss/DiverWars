@@ -9,11 +9,14 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.mrmelon__.diverwars.game.GameItems.Armor;
 
+import java.util.UUID;
+
 public class TeamPlayer {
 
     private Team team;
 
     private Player player;
+    private UUID uuid;
 
     private Armor armor;
 
@@ -26,6 +29,7 @@ public class TeamPlayer {
     public TeamPlayer(Team team, Player player) {
         this.team = team;
         this.player = player;
+        this.uuid = player.getUniqueId();
 
         currentAirCount=300;
         tempForMultiply=0;
@@ -71,5 +75,13 @@ public class TeamPlayer {
 
     public void setCurrentAirCount(int currentAirCount) {
         this.currentAirCount = currentAirCount;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 }
