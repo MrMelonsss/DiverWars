@@ -40,6 +40,10 @@ public class GameSettingsCMD implements CommandExecutor {
             if (strings[0].equals("teamadd")) {
                 Main.getInstance().getGameManager().getGameByName(strings[1]).getTeamByName(strings[2]).addPlayersInTeam(player);
                 System.out.println(Main.getInstance().getGameManager().getGameByName(strings[1]).getTeamPlayerByPlayer(player));
+                Main.getInstance().getGameManager().getGameByName(strings[1]).joinGame(player);
+            }
+            if (strings[0].equals("join")) {
+                Main.getInstance().getGameManager().getGameByName(strings[1]).joinGame(player);
             }
             if (strings[0].equals("switchTrue")) {
                 Main.getInstance().getGameManager().getGameByName(strings[1]).getTeamByName(strings[2]).isRegenerationAir=true;

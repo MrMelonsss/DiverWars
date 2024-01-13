@@ -20,8 +20,6 @@ public class TeamPlayer {
 
     private Armor armor;
 
-    public boolean airEventIsWorking;
-
     private int tempForMultiply;
     private int currentAirCount;
 
@@ -34,7 +32,6 @@ public class TeamPlayer {
         currentAirCount=300;
         tempForMultiply=0;
         armor = Armor.LEATHER_DIVING_SUIT;
-        airEventIsWorking=false;
     }
 
     public Player getPlayer() {

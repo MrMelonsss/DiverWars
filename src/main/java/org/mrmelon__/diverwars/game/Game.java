@@ -29,7 +29,7 @@ public class Game {
     private FileConfiguration gameConfig;
 
 
-    private boolean gameStatement;
+    public boolean gameStatement;
     private List<Player> playersInSession;
     private int countOfPlayersInSession;
 
@@ -181,16 +181,44 @@ public class Game {
 
     public void startGame() {
         gameStatement=true;
+        Bukkit.broadcastMessage("game was started");
+
         //join in team all peoples
+
+        for (Player player : playersInSession) {
+            if (!checkPlayerInAnyTeam(player)) {
+                for (Team team : teams) {
+                    if (team.getPlayers()!=team.getPlayersInTeam().size()) {
+                        team.addPlayersInTeam(player);
+                        player.sendMessage("U r was added in "+ChatColor.getByChar(team.getColor())+team.getName()+"'s team");
+                        break;
+                    } else {
+                        player.sendMessage("Error with adding in team");
+                    }
+                }
+            }
+        }
 
         //tp teamSpawn
     }
+
+    public boolean checkPlayerInAnyTeam(Player player) {
+        for (Team team : teams) {
+            for (TeamPlayer teamPlayer : team.getPlayersInTeam()) {
+                if (teamPlayer.getPlayer().equals(player)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public void endGame() {
         gameStatement=false;
     }
 
     public void joinGame(Player player) {
-        if (gameStatement) return;
+        if (gameStatement) return; // сделать сообщение об ошибке
         if (countOfPlayersInSession<countOfPlayers) {
             countOfPlayersInSession++;
             playersInSession.add(player);
@@ -198,7 +226,7 @@ public class Game {
             // сделать норм сообщение
             Bukkit.broadcastMessage(player.getName()+" join in the game ["+countOfPlayersInSession+"/"+countOfPlayers+"]");
             if (countOfPlayersInSession==countOfPlayers) {
-                Bukkit.broadcastMessage("Game will be starting after 10 sec");
+                Bukkit.broadcastMessage("Game will be starting after 10 sec"); //ОТСЫЛАТЬ ВСЕМ В ИГРЕ
                 // реализовать таймер и прочую ересь
                 Bukkit.broadcastMessage("Game is starting...");
                 startGame();
@@ -328,6 +356,22 @@ public class Game {
 
     public HashMap<Location, Material> getBlocksForReplace() {
         return blocksForReplace;
+    }
+
+    public List<Player> getPlayersInSession() {
+        return playersInSession;
+    }
+
+    public void setPlayersInSession(List<Player> playersInSession) {
+        this.playersInSession = playersInSession;
+    }
+
+    public int getCountOfPlayersInSession() {
+        return countOfPlayersInSession;
+    }
+
+    public void setCountOfPlayersInSession(int countOfPlayersInSession) {
+        this.countOfPlayersInSession = countOfPlayersInSession;
     }
 
     //
