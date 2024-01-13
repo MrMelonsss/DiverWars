@@ -51,8 +51,7 @@ public class EngineEvent implements Listener {
                                     event.setAmount(300);
                                 }
                             } else {
-                                if (curr >= 300) {
-                                } else if (team != null) { //fasfas
+                                if (team != null) { //fasfas
                                     // вывод колва воздуха в куполе
                                     if (team.isRegenerationAir) {
                                         if (300 - curr < regen) {
@@ -70,25 +69,30 @@ public class EngineEvent implements Listener {
                                                 event.setAmount(curr - 1);
                                             }
                                             if (player.isDead()) {
-                                                teamPlayer.setCurrentAirCount(300);
-                                                event.setAmount(300);
+                                                teamPlayer.setCurrentAirCount(299);
+                                                event.setAmount(299);
                                             }
-                                        } else if (300 - curr < regen) {
-                                            if (300 - curr >= team.getAirPercent()) {
+                                        } else if (curr==299) {
+
+                                            team.setAirPercent(team.getAirPercent() - 1);
+                                            event.setAmount(299);
+
+                                        }else if (300 - curr < regen) {
+                                            if (299 - curr >= team.getAirPercent()) {
                                                 event.setAmount(curr + team.getAirPercent());
                                                 team.setAirPercent(0);
                                                 // mess zero perc of air
                                             } else {
-                                                event.setAmount(300);
-                                                team.setAirPercent(team.getAirPercent() - (300 - curr));
+                                                event.setAmount(299);
+                                                team.setAirPercent(team.getAirPercent() - (299 - curr));
                                             }
                                         } else {
-                                            if (regen > teamPlayer.getTeam().getAirPercent()) {
+                                            if (regen > team.getAirPercent()) {
                                                 event.setAmount(curr + team.getAirPercent());
                                                 team.setAirPercent(0);
                                                 // mess zero perc of air
                                             } else {
-                                                event.setAmount(curr + regen);
+                                                event.setAmount(curr + regen == 300 ? 299 : curr+regen);
                                                 team.setAirPercent(team.getAirPercent() - regen);
                                             }
                                         }

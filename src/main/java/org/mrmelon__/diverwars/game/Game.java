@@ -10,7 +10,6 @@ import java.io.File;
 import java.util.*;
 
 public class Game {
-    public static int ds=0;
 
     private String name;
     private String mapName;
@@ -181,7 +180,7 @@ public class Game {
 
     public void startGame() {
         gameStatement=true;
-        Bukkit.broadcastMessage("game was started");
+        sendMessageSessionPlayers("game was started");
 
         //join in team all peoples
 
@@ -220,15 +219,19 @@ public class Game {
     public void joinGame(Player player) {
         if (gameStatement) return; // сделать сообщение об ошибке
         if (countOfPlayersInSession<countOfPlayers) {
+            if (playersInSession.contains(player)) {
+                player.sendMessage("U already in session");
+                return;
+            }
             countOfPlayersInSession++;
             playersInSession.add(player);
             player.teleport(new Location(Bukkit.getWorld(world),lobby[0],lobby[1],lobby[2]));
             // сделать норм сообщение
-            Bukkit.broadcastMessage(player.getName()+" join in the game ["+countOfPlayersInSession+"/"+countOfPlayers+"]");
+            sendMessageSessionPlayers(player.getName()+" join in the game ["+countOfPlayersInSession+"/"+countOfPlayers+"]");
             if (countOfPlayersInSession==countOfPlayers) {
-                Bukkit.broadcastMessage("Game will be starting after 10 sec"); //ОТСЫЛАТЬ ВСЕМ В ИГРЕ
+                sendMessageSessionPlayers("Game will be starting after 10 sec"); //ОТСЫЛАТЬ ВСЕМ В ИГРЕ
                 // реализовать таймер и прочую ересь
-                Bukkit.broadcastMessage("Game is starting...");
+                sendMessageSessionPlayers("Game is starting...");
                 startGame();
             }
         }
@@ -239,9 +242,15 @@ public class Game {
         countOfPlayersInSession--;
         playersInSession.remove(player);
         // сделать норм сообщение
-        Bukkit.broadcastMessage(player.getName()+" leave from the game ["+countOfPlayersInSession+"/"+countOfPlayers+"]");
+        sendMessageSessionPlayers(player.getName()+" leave from the game ["+countOfPlayersInSession+"/"+countOfPlayers+"]");
         if (countOfPlayersInSession-1==countOfPlayers) {
-            Bukkit.broadcastMessage("Game will not be starting");
+            sendMessageSessionPlayers("Game will not be starting");
+        }
+    }
+
+    public void sendMessageSessionPlayers(String string) {
+        for (Player player : playersInSession) {
+            player.sendMessage(string);
         }
     }
 
