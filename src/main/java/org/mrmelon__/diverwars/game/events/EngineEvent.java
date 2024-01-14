@@ -47,8 +47,8 @@ public class EngineEvent implements Listener {
                                     event.setAmount(curr - 1);
                                 }
                                 if (player.isDead()) {
-                                    teamPlayer.setCurrentAirCount(300);
-                                    event.setAmount(300);
+                                    teamPlayer.setCurrentAirCount(299);
+                                    event.setAmount(299);
                                 }
                             } else {
                                 if (team != null) { //fasfas

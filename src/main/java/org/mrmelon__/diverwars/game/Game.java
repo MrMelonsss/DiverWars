@@ -4,6 +4,8 @@ import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.mrmelon__.diverwars.Main;
 
 import java.io.File;
@@ -180,7 +182,8 @@ public class Game {
 
     public void startGame() {
         gameStatement=true;
-        sendMessageSessionPlayers("game was started");
+
+        sendMessageSessionPlayers(ChatColor.GOLD + "Game is starting...");
 
         //join in team all peoples
 
@@ -189,16 +192,17 @@ public class Game {
                 for (Team team : teams) {
                     if (team.getPlayers()!=team.getPlayersInTeam().size()) {
                         team.addPlayersInTeam(player);
-                        player.sendMessage("U r was added in "+ChatColor.getByChar(team.getColor())+team.getName()+"'s team");
+                        player.sendMessage(ChatColor.AQUA + "U r was added in "+ChatColor.getByChar(team.getColor())+team.getName()+ ChatColor.AQUA +" team");
+                        player.teleport(new Location(Bukkit.getWorld(world), team.getTeamSpawn()[0],team.getTeamSpawn()[1],team.getTeamSpawn()[2]));
+                        regenPlayer(player);
                         break;
-                    } else {
-                        player.sendMessage("Error with adding in team");
                     }
                 }
             }
         }
 
         //tp teamSpawn
+
     }
 
     public boolean checkPlayerInAnyTeam(Player player) {
@@ -214,6 +218,8 @@ public class Game {
 
     public void endGame() {
         gameStatement=false;
+
+        sendMessageSessionPlayers(ChatColor.GOLD + "Game is ending...");
     }
 
     public void joinGame(Player player) {
@@ -226,13 +232,28 @@ public class Game {
             countOfPlayersInSession++;
             playersInSession.add(player);
             player.teleport(new Location(Bukkit.getWorld(world),lobby[0],lobby[1],lobby[2]));
+            regenPlayer(player);
             // сделать норм сообщение
             sendMessageSessionPlayers(player.getName()+" join in the game ["+countOfPlayersInSession+"/"+countOfPlayers+"]");
             if (countOfPlayersInSession==countOfPlayers) {
-                sendMessageSessionPlayers("Game will be starting after 10 sec"); //ОТСЫЛАТЬ ВСЕМ В ИГРЕ
+
+                final int[] timer = {10}; // потом связать с конфигом
+                sendMessageSessionPlayers(ChatColor.YELLOW + "Game will be starting after " + ChatColor.RED + timer[0] + ChatColor.YELLOW + " sec"); //ОТСЫЛАТЬ ВСЕМ В ИГРЕ
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        timer[0]--;
+                        if (timer[0]==0) {
+                            cancel();
+                            startGame();
+                        } else {
+                            sendMessageSessionPlayers(ChatColor.YELLOW + "Game will be starting after " + ChatColor.RED + timer[0] + ChatColor.YELLOW + " sec");
+                        }
+                    }
+                }.runTaskTimer(Main.getInstance(),20L,20L);
                 // реализовать таймер и прочую ересь
-                sendMessageSessionPlayers("Game is starting...");
-                startGame();
+
+
             }
         }
     }
@@ -245,6 +266,16 @@ public class Game {
         sendMessageSessionPlayers(player.getName()+" leave from the game ["+countOfPlayersInSession+"/"+countOfPlayers+"]");
         if (countOfPlayersInSession-1==countOfPlayers) {
             sendMessageSessionPlayers("Game will not be starting");
+        }
+    }
+
+    public void regenPlayer(Player player) {
+        player.setHealth(player.getMaxHealth());
+        player.setLevel(0);
+        player.setExp(0); // dobavit партиклы
+        player.setFoodLevel(20);
+        for (PotionEffectType potionEffectType : PotionEffectType.values()) {
+            player.removePotionEffect(potionEffectType);
         }
     }
 
