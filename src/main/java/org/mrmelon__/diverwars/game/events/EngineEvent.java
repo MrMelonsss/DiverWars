@@ -55,7 +55,7 @@ public class EngineEvent implements Listener {
                                     // вывод колва воздуха в куполе
                                     if (team.isRegenerationAir) {
                                         if (300 - curr < regen) {
-                                            event.setAmount(300);
+                                            event.setAmount(299);
                                         } else {
                                             event.setAmount(curr + regen);
                                         }

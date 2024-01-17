@@ -19,7 +19,7 @@ public class JoinEvent implements Listener {
 
         Game game = Main.getInstance().getGameManager().getGameByWorld(player.getWorld().getName());
 
-        Location spawn = new Location(Bukkit.getWorld("world"),0,0,70); // потом привязать к конфигу
+        Location spawn = new Location(Bukkit.getWorld("world"),0,70,0); // потом привязать к конфигу
 
         for (Team team : game.getTeams()) {
             for (TeamPlayer teamPlayer : team.getPlayersInTeam()) {

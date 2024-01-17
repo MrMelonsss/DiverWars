@@ -42,9 +42,6 @@ public class GameSettingsCMD implements CommandExecutor {
                 System.out.println(Main.getInstance().getGameManager().getGameByName(strings[1]).getTeamPlayerByPlayer(player));
                 Main.getInstance().getGameManager().getGameByName(strings[1]).joinGame(player);
             }
-            if (strings[0].equals("join")) {
-                Main.getInstance().getGameManager().getGameByName(strings[1]).joinGame(player);
-            }
             if (strings[0].equals("switchTrue")) {
                 Main.getInstance().getGameManager().getGameByName(strings[1]).getTeamByName(strings[2]).isRegenerationAir=true;
                 System.out.println(Main.getInstance().getGameManager().getGameByName(strings[1]).getTeamByName(strings[2]).isRegenerationAir);
@@ -57,7 +54,7 @@ public class GameSettingsCMD implements CommandExecutor {
             // BLOCK DEL
 
 
-            switch (strings[0]){
+            switch (strings[0].toLowerCase()){
                 case "create":
                     if (strings.length==2) {
                         if (!Main.getInstance().getGameManager().nameExist(strings[1])) {
@@ -68,7 +65,7 @@ public class GameSettingsCMD implements CommandExecutor {
                         commandSender.sendMessage("This game is already exist");
                     } else commandSender.sendMessage("Please, use /diverwars create [game]");
                     break;
-                case "reloadIN":
+                case "reloadin":
                     if (strings.length==2) {
                         if (Main.getInstance().getGameManager().nameExist(strings[1])) {
                             Main.getInstance().getGameManager().getGameByName(strings[1]).reloadValueInConfig();
@@ -78,7 +75,7 @@ public class GameSettingsCMD implements CommandExecutor {
                         commandSender.sendMessage("This game is not defined");
                     } else commandSender.sendMessage("Please, use /diverwars reloadIN [game]");
                     break;
-                case "reloadOUT":
+                case "reloadout":
                     if (strings.length==2) {
                         if (Main.getInstance().getGameManager().nameExist(strings[1])) {
                             Main.getInstance().getGameManager().getGameByName(strings[1]).getAllFromConfig();
@@ -87,6 +84,24 @@ public class GameSettingsCMD implements CommandExecutor {
                         }
                         commandSender.sendMessage("This game is not defined");
                     } else commandSender.sendMessage("Please, use /diverwars reloadOUT [game]");
+                    break;
+                case "join":
+                    if (strings.length==2) {
+                        if (Main.getInstance().getGameManager().nameExist(strings[1])) {
+                            Main.getInstance().getGameManager().getGameByName(strings[1]).joinGame(player);
+                            return true;
+                        }
+                        commandSender.sendMessage("This game is not defined");
+                    } else commandSender.sendMessage("Please, use /diverwars join [game]");
+                    break;
+                case "leave":
+                    if (strings.length==2) {
+                        if (Main.getInstance().getGameManager().nameExist(strings[1])) {
+                            Main.getInstance().getGameManager().getGameByName(strings[1]).leaveGame(player);
+                            return true;
+                        }
+                        commandSender.sendMessage("This game is not defined");
+                    } else commandSender.sendMessage("Please, use /diverwars leave [game]");
                     break;
                 case "delete":
                     if (strings.length==2) {

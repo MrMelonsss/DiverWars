@@ -2,13 +2,15 @@ package org.mrmelon__.diverwars.game.events;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.inventory.Inventory;
 import org.mrmelon__.diverwars.Main;
 import org.mrmelon__.diverwars.game.Game;
+import org.mrmelon__.diverwars.game.Team;
+import org.mrmelon__.diverwars.game.TeamPlayer;
 
 public class BlockActionEvent implements Listener {
 
@@ -18,10 +20,28 @@ public class BlockActionEvent implements Listener {
         Location location = block.getLocation();
         World world = location.getWorld();
         Game game = Main.getInstance().getGameManager().getGameByWorld(world.getName());
+        Player player = event.getPlayer();
 
         if (checkRegion(game,location)) {
-            if (!game.getBlocksForReplace().containsKey(location)) {
-                game.getBlocksForReplace().put(location, block.getType());
+            Team team = game.getTeamByEngineLocation(location);
+            if (team!=null) {
+                for (TeamPlayer teamPlayer : team.getPlayersInTeam()) {
+                    if (teamPlayer.getPlayer().equals(player)) {
+                        player.sendMessage("You can't break you bed");
+                        event.setCancelled(true);
+                        return;
+                    }
+                }
+                player.sendMessage("You broke bed");
+                team.brokeRegeneration();
+            } else {
+                if (game.getBlocksForReplace().containsKey(location)) {
+                    location.getBlock().setType(game.getBlocksForReplace().get(location));
+                    game.getBlocksForReplace().remove(location);
+                } else {
+                    player.sendMessage("You can't break this block");
+                    event.setCancelled(true);
+                }
             }
         }
 
@@ -33,11 +53,14 @@ public class BlockActionEvent implements Listener {
         Location location = block.getLocation();
         World world = location.getWorld();
         Game game = Main.getInstance().getGameManager().getGameByWorld(world.getName());
+        Player player = event.getPlayer();
 
         if (checkRegion(game,location)) {
-            if (!game.getBlocksForReplace().containsKey(location)) {
-                game.getBlocksForReplace().put(location, Material.AIR); // пофиксить тему с водой
+            if (game.getTeamByEngineLocation(location)!=null) {
+                player.sendMessage("You can't place block here");
+                return;
             }
+            game.getBlocksForReplace().put(location, block.getType()); // пофиксить тему с водой
         }
     }
 

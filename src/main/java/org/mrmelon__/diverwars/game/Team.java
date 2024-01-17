@@ -131,4 +131,7 @@ public class Team {
     public void setMaxAirPercent(int maxAirPercent) {
         this.maxAirPercent = maxAirPercent;
     }
+    public void brokeRegeneration() {
+        isRegenerationAir=false;
+    }
 }

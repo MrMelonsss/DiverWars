@@ -220,6 +220,9 @@ public class Game {
         gameStatement=false;
 
         sendMessageSessionPlayers(ChatColor.GOLD + "Game is ending...");
+
+        playersInSession.clear();
+        countOfPlayersInSession=0;
     }
 
     public void joinGame(Player player) {
@@ -231,6 +234,7 @@ public class Game {
             }
             countOfPlayersInSession++;
             playersInSession.add(player);
+            player.setInvulnerable(true);
             player.teleport(new Location(Bukkit.getWorld(world),lobby[0],lobby[1],lobby[2]));
             regenPlayer(player);
             // сделать норм сообщение
@@ -242,12 +246,16 @@ public class Game {
                 new BukkitRunnable() {
                     @Override
                     public void run() {
-                        timer[0]--;
-                        if (timer[0]==0) {
-                            cancel();
-                            startGame();
+                        if (countOfPlayersInSession==countOfPlayers) {
+                            timer[0]--;
+                            if (timer[0] == 0) {
+                                cancel();
+                                startGame();
+                            } else {
+                                sendMessageSessionPlayers(ChatColor.YELLOW + "Game will be starting after " + ChatColor.RED + timer[0] + ChatColor.YELLOW + " sec");
+                            }
                         } else {
-                            sendMessageSessionPlayers(ChatColor.YELLOW + "Game will be starting after " + ChatColor.RED + timer[0] + ChatColor.YELLOW + " sec");
+                            cancel();
                         }
                     }
                 }.runTaskTimer(Main.getInstance(),20L,20L);
@@ -262,6 +270,9 @@ public class Game {
         if (gameStatement) return;
         countOfPlayersInSession--;
         playersInSession.remove(player);
+        player.setInvulnerable(true);
+        player.teleport(new Location(Bukkit.getWorld("world"),0,70,0)); // сделать локацию на спавн
+        regenPlayer(player);
         // сделать норм сообщение
         sendMessageSessionPlayers(player.getName()+" leave from the game ["+countOfPlayersInSession+"/"+countOfPlayers+"]");
         if (countOfPlayersInSession-1==countOfPlayers) {
@@ -274,6 +285,7 @@ public class Game {
         player.setLevel(0);
         player.setExp(0); // dobavit партиклы
         player.setFoodLevel(20);
+        player.setRemainingAir(299);
         for (PotionEffectType potionEffectType : PotionEffectType.values()) {
             player.removePotionEffect(potionEffectType);
         }
@@ -412,6 +424,16 @@ public class Game {
 
     public void setCountOfPlayersInSession(int countOfPlayersInSession) {
         this.countOfPlayersInSession = countOfPlayersInSession;
+    }
+
+    public Team getTeamByEngineLocation(Location location) {
+        int[] loc = {location.getBlockX(), location.getBlockY(), location.getBlockZ()};
+        for (Team team : teams) {
+            if (Arrays.equals(team.getTeamEngine(), loc)) {
+                return team;
+            }
+        }
+        return null;
     }
 
     //
