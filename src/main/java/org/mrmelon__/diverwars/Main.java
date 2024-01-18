@@ -1,7 +1,12 @@
 package org.mrmelon__.diverwars;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.mrmelon__.diverwars.commands.GameSettingsCMD;
 import org.mrmelon__.diverwars.game.GameManager;
 import org.mrmelon__.diverwars.game.Team;
@@ -15,11 +20,17 @@ public final class Main extends JavaPlugin {
 
     private static Main instance;
     private GameManager gameManager;
+
+    private FileConfiguration configMain;
     public static Main getInstance() {
         return instance;
     }
     public GameManager getGameManager() {
         return gameManager;
+    }
+
+    public FileConfiguration getConfigMain() {
+        return configMain;
     }
 
     @Override
@@ -35,6 +46,8 @@ public final class Main extends JavaPlugin {
         if (!configFile.exists()) {
             saveResource("plugin.yml",false);
         }
+        configMain = YamlConfiguration.loadConfiguration(configFile);
+
 
         getCommand("diverwars").setExecutor(new GameSettingsCMD());
         Bukkit.getPluginManager().registerEvents(new BlockActionEvent(),this);
@@ -42,10 +55,6 @@ public final class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new JoinEvent(),this);
 
         gameManager = new GameManager();
-
-        for (Team team : (gameManager.getGameByName("guga").getTeams())) {
-            System.out.println(team.getName());
-        }
 
         //
 
@@ -59,4 +68,15 @@ public final class Main extends JavaPlugin {
         //
 
     }
+
+// ебучие баги майна
+    public void tpPlayer(Location location, Player player) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                player.teleport(location);
+            }
+        }.runTaskLater(Main.getInstance(),1L);
+    }
+
 }

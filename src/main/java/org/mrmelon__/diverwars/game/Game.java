@@ -4,6 +4,8 @@ import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.mrmelon__.diverwars.Main;
@@ -180,6 +182,25 @@ public class Game {
         return null;
     }
 
+    public void activateGenerators(Team team) {
+        World world = Bukkit.getWorld(this.world);
+        int[] locXYZ = team.getTeamGenerator();
+        Location location = new Location(world, locXYZ[0], locXYZ[1], locXYZ[2]);
+        ItemStack itemStack = new ItemStack(Material.PRISMARINE_SHARD);
+
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+
+                if (gameStatement) {
+                    world.dropItem(location, itemStack); //ПОКА ЧТО ТАК РЕАЛИЗУЕМ
+                }
+
+            }
+        }.runTaskTimer(Main.getInstance(), 0L, 20L);
+    }
+
     public void startGame() {
         gameStatement=true;
 
@@ -193,13 +214,20 @@ public class Game {
                     if (team.getPlayers()!=team.getPlayersInTeam().size()) {
                         team.addPlayersInTeam(player);
                         player.sendMessage(ChatColor.AQUA + "U r was added in "+ChatColor.getByChar(team.getColor())+team.getName()+ ChatColor.AQUA +" team");
-                        player.teleport(new Location(Bukkit.getWorld(world), team.getTeamSpawn()[0],team.getTeamSpawn()[1],team.getTeamSpawn()[2]));
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION,132142,0,true));   //временно!!!!!!!!!!!!!!!!!!
+                        Main.getInstance().tpPlayer(new Location(Bukkit.getWorld(world), team.getTeamSpawn()[0],team.getTeamSpawn()[1],team.getTeamSpawn()[2]),player);
                         regenPlayer(player);
+                        player.setInvulnerable(false);
                         break;
                     }
                 }
             }
         }
+
+        for (Team team : teams) {
+            activateGenerators(team);
+        }
+
 
         //tp teamSpawn
 
@@ -235,7 +263,7 @@ public class Game {
             countOfPlayersInSession++;
             playersInSession.add(player);
             player.setInvulnerable(true);
-            player.teleport(new Location(Bukkit.getWorld(world),lobby[0],lobby[1],lobby[2]));
+            Main.getInstance().tpPlayer(new Location(Bukkit.getWorld(world),lobby[0],lobby[1],lobby[2]),player);
             regenPlayer(player);
             // сделать норм сообщение
             sendMessageSessionPlayers(player.getName()+" join in the game ["+countOfPlayersInSession+"/"+countOfPlayers+"]");
@@ -271,12 +299,13 @@ public class Game {
         countOfPlayersInSession--;
         playersInSession.remove(player);
         player.setInvulnerable(true);
-        player.teleport(new Location(Bukkit.getWorld("world"),0,70,0)); // сделать локацию на спавн
+        List<Integer> spawnLocation = Main.getInstance().getConfigMain().getIntegerList("spawnLocation");
+        Main.getInstance().tpPlayer(new Location(Bukkit.getWorld(Main.getInstance().getConfigMain().getString("spawnWorld")),spawnLocation.get(0),spawnLocation.get(1),spawnLocation.get(2)),player); // сделать локацию на спавн
         regenPlayer(player);
         // сделать норм сообщение
         sendMessageSessionPlayers(player.getName()+" leave from the game ["+countOfPlayersInSession+"/"+countOfPlayers+"]");
-        if (countOfPlayersInSession-1==countOfPlayers) {
-            sendMessageSessionPlayers("Game will not be starting");
+        if (countOfPlayersInSession+1==countOfPlayers) {
+            sendMessageSessionPlayers(ChatColor.YELLOW + "Game will not be starting");
         }
     }
 
