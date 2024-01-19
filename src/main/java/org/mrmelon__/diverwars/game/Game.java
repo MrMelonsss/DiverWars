@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -310,11 +311,13 @@ public class Game {
     }
 
     public void regenPlayer(Player player) {
+        PlayerInventory inventory = player.getInventory();
+        //надо очистку инвентаря реализовать
         player.setHealth(player.getMaxHealth());
         player.setLevel(0);
         player.setExp(0); // dobavit партиклы
         player.setFoodLevel(20);
-        player.setRemainingAir(299);
+        player.setRemainingAir(295);
         for (PotionEffectType potionEffectType : PotionEffectType.values()) {
             player.removePotionEffect(potionEffectType);
         }

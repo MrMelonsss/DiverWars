@@ -25,7 +25,7 @@ public class JoinEvent implements Listener {
         FileConfiguration configuration = Main.getInstance().getConfigMain();
         List<Integer> list = configuration.getIntegerList("spawnLocation");
 
-        Location spawn = new Location(Bukkit.getWorld(configuration.getString("spawnWorld")),list.get(0),list.get(1),list.get(2)); // потом привязать к конфигу
+        Location spawn = new Location(Bukkit.getWorld(configuration.getString("spawnWorld")),list.get(0),list.get(1),list.get(2));
 
         player.setInvulnerable(true);
 
