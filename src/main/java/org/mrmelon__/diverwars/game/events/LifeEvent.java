@@ -32,9 +32,11 @@ public class LifeEvent implements Listener {
                 System.out.println("gm");
                 if (game.gameStatement) {
                     System.out.println("ac");
+                    System.out.println(player.getHealth() + " " + event.getDamage());
                     if (player.getHealth()-event.getDamage()<=0) {
                         event.setCancelled(true);
                         System.out.println(event.getCause().toString());
+                        System.out.println(event.getCause());
                         game.sendMessageSessionPlayers(ChatColor.GREEN + player.getName()+" was killed by "+ "CAUSE");
                         player.setGameMode(GameMode.SPECTATOR);
                         Main.getInstance().tpPlayer(new Location(Bukkit.getWorld(game.getWorld()),game.getLobby()[0],game.getLobby()[1],game.getLobby()[2]),player);

@@ -3,7 +3,9 @@ package org.mrmelon__.diverwars.game;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityAirChangeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
@@ -317,7 +319,8 @@ public class Game {
         player.setLevel(0);
         player.setExp(0); // dobavit партиклы
         player.setFoodLevel(20);
-        player.setRemainingAir(295);
+        System.out.println("regcall");
+        Bukkit.getPluginManager().callEvent(new EntityAirChangeEvent( (Entity) player,299));
         for (PotionEffectType potionEffectType : PotionEffectType.values()) {
             player.removePotionEffect(potionEffectType);
         }
